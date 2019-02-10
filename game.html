@@ -27,7 +27,10 @@
 
             function startGame() {
                 myGameArea.start();
-                myGamePiece = new component(30, 30, "red-ship.png", 10, 120, "image");
+                myGamePiece = new component(50, 50, "player.png", 270, 340, "image");
+                enemy = new component(30, 30, "enemy.png",270, 100,"image");
+                beam = new component(5, 50, "beam.png", 200, 200, "image" );
+
             }
             
             // myGameArea object controls canvas attribues and player controls 
@@ -40,8 +43,8 @@
                 start : function() {
                     
                     // canvas dimensions 
-                    this.canvas.width = 480;
-                    this.canvas.height = 270;
+                    this.canvas.width = 600;
+                    this.canvas.height = 400;
 
                     // canvas context used to draw on canvas
                     this.context = this.canvas.getContext("2d");
@@ -108,7 +111,7 @@
                     }
                 }
                 
-                // facilitates movement of player
+                // facilitates movement of game objects
                 this.newPos = function() {
                     this.x += this.speedX;
                     this.y += this.speedY;        
@@ -120,15 +123,20 @@
                 myGameArea.clear();
                 
                 myGamePiece.speedX = 0;
-                myGamePiece.speedY = 0;    
+                enemy.speedY =0 ;
                 
-                if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
-                if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
-                if (myGameArea.key && myGameArea.key == 38) {myGamePiece.speedY = -1; }
-                if (myGameArea.key && myGameArea.key == 40) {myGamePiece.speedY = 1; }
+                if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -8; }
+                if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 8; }
+                if (myGameArea.key && myGameArea.key == 32) {beam.speedY = -10; }
                 
                 myGamePiece.newPos();    
                 myGamePiece.update();
+
+                enemy.newPos();
+                enemy.update();
+                
+                beam.newPos();
+                beam.update();
             }
 
         </script>
