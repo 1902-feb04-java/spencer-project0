@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        
+        <!-- style the canvas -->
+        <style>
+            canvas {
+            border:1px solid black;
+            background-color:black;
+        }
+
+        </style>
+    
+    </head>
+
+    <!-- initial function call to start game in body tag -->
+    <body onload="startGame()">
+    
+        <!-- begin js -->
+        <script>
+
+            // initialize player
+            var myGamePiece;
+
+            function startGame() {
+                myGameArea.start();
+                myGamePiece = new component(30, 30, "red-ship.png", 10, 120, "image");
+            }
+            
+            // myGameArea object controls canvas attribues and player controls 
+            var myGameArea = {
+            
+                // creates the canvas
+                canvas : document.createElement("canvas"),
+                
+                //start function creates initial conditions on canvas
+                start : function() {
+                    
+                    // canvas dimensions 
+                    this.canvas.width = 480;
+                    this.canvas.height = 270;
+
+                    // canvas context used to draw on canvas
+                    this.context = this.canvas.getContext("2d");
+
+                    // ensure canvas is loaded first before other elements in body
+                    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                
+                    // sets the interval at which the game updates its state 
+                    this.interval = setInterval(updateGameArea, 20);
+
+                    // event listener for key press
+                    window.addEventListener('keydown', function (e) {
+                        myGameArea.key = e.keyCode;
+                    })
+                    
+                    // event listener for key release
+                    window.addEventListener('keyup', function (e) {
+                        myGameArea.key = false;
+                    })
+                }, 
+                
+                // clears the canvas to avoid "drag" effect, facilitate animation
+                clear : function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+
+            // game component constructor
+            function component(width, height, color, x, y, type) {
+                
+                this.gamearea = myGameArea;
+                this.type = type;
+                if (type == "image") {
+                    this.image = new Image();
+                    this.image.src = color;
+                }
+                this.width = width;
+                this.height = height;
+                this.speedX = 0;
+                this.speedY = 0;    
+                this.x = x;
+                this.y = y;    
+                
+                // draws game object
+                this.update = function() {
+                    ctx = myGameArea.context;
+                    if (type == "image") {
+                        ctx.drawImage(
+                            this.image,
+                            this.x,
+                            this.y,
+                            this.width,
+                            this.height
+                        );
+                    }
+                    else {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(
+                            this.x,
+                            this.y,
+                            this.width, 
+                            this.height
+                        )
+                    }
+                }
+                
+                // facilitates movement of player
+                this.newPos = function() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;        
+                }
+            }
+
+            // updates game area to reflect current player input and animation sequences
+            function updateGameArea() {
+                myGameArea.clear();
+                
+                myGamePiece.speedX = 0;
+                myGamePiece.speedY = 0;    
+                
+                if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
+                if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
+                if (myGameArea.key && myGameArea.key == 38) {myGamePiece.speedY = -1; }
+                if (myGameArea.key && myGameArea.key == 40) {myGamePiece.speedY = 1; }
+                
+                myGamePiece.newPos();    
+                myGamePiece.update();
+            }
+
+        </script>
+
+    </body>
+
+</html>
