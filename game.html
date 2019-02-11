@@ -27,9 +27,17 @@
             var ship;
             var enemies = [];
             var beams = [];
+            
+            function getRndInt(min, max) {
+                return Math.floor(Math.random() * (max - min) ) + min;
+            }
+
+            let rng = getRndInt(30, 350);
+
 
             function startGame() {
                 myGameArea.start();
+                myGameArea.mobGen();
                 ship = new component(50, 50, "player.png", 270, 340, "image");
                 enemy = new component(30, 30, "enemy.png",270, 100,"image");
                 beam = new component(0, 0, "beam.png", ship.x + 22.5, ship.y,"image");
@@ -76,7 +84,12 @@
                 },
                 stop : function () {
                         clearInterval(this.interval);
-                }            
+                }, 
+                mobGen : function ()  {
+                        setInterval(3000,
+                        enemy = new component(30, 30, "enemy.png", 150, 150, "image")) 
+                        enemy.speedY = 1; 
+                }           
             }
                 
 
@@ -149,32 +162,36 @@
                     enemy.x = -1000;
                 } 
                 else {
-                myGameArea.clear();
-                enemy.y += 1;        
-                enemy.update();
-                beam.newPos();    
-                beam.update();
+                    myGameArea.clear();
+                
+                    for (i = 0; i < beams.length; i++) { 
+                        beams[i].newPos();    
+                        beams[i].update();
+                    }
+
                 }
 
-                for (let i = 0; i < enemies.length; i++) {
-                    
-                }
                 ship.speedX = 0;
                 if (myGameArea.key && myGameArea.key == 37) {ship.speedX = - 8; }
                 if (myGameArea.key && myGameArea.key == 39) {ship.speedX = 8; }
+                
+                
                 if (myGameArea.key && myGameArea.key == 32) {
                     beams.push(beam = new component(5, 10, "beam.png", 
-                    ship.x + 22.5, ship.y,"image"));
-                    beam.speedY = -5;}
+                    ship.x + 22.5, ship.y + 5,"image"));
+                    beam.speedY = -1;
+                    // console.log(beams.length);
+                   }
+
                  
-                ship.newPos();    
+                ship.newPos();      
                 ship.update();
 
                 enemy.newPos();
                 enemy.update();
                 
-                beam.newPos();
-                beam.update();
+                // beam.newPos();
+                // beam.update();
             }
 
         </script>
