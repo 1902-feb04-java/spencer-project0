@@ -11,7 +11,6 @@
             border:1px solid black;
             background-color:black;
         }
-
         </style>
     
     </head>
@@ -22,31 +21,23 @@
         <!-- begin js -->
 
         <script>
-
             // initialize player
-            var ship;
-            var enemies = [];
-            var beams = [];
+            let ship;
+            let enemies = [];
+            let beams = [];
             
-            function getRndInt(min, max) {
-                return Math.floor(Math.random() * (max - min) ) + min;
-            }
-
-            let rng = getRndInt(30, 350);
-
-
             function startGame() {
+                
                 myGameArea.start();
-                myGameArea.mobGen();
+
                 ship = new component(50, 50, "player.png", 270, 340, "image");
                 enemy = new component(30, 30, "enemy.png",270, 100,"image");
                 beam = new component(0, 0, "beam.png", ship.x + 22.5, ship.y,"image");
-
             
             }
             
             // myGameArea object controls canvas attribues and player controls 
-            var myGameArea = {
+            let myGameArea = {
             
                 // creates the canvas
                 canvas : document.createElement("canvas"),
@@ -57,16 +48,16 @@
                     // canvas dimensions 
                     this.canvas.width = 600;
                     this.canvas.height = 400;
-
+                    
                     // canvas context used to draw on canvas
                     this.context = this.canvas.getContext("2d");
-
+                    
                     // ensure canvas is loaded first before other elements in body
                     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                 
                     // sets the interval at which the game updates its state 
                     this.interval = setInterval(updateGameArea, 10);
-
+                    
                     // event listener for key press
                     window.addEventListener('keydown', function (e) {
                         myGameArea.key = e.keyCode;
@@ -82,36 +73,37 @@
                 clear : function() {
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 },
+                
                 stop : function () {
                         clearInterval(this.interval);
-                }, 
-                mobGen : function ()  {
-                        setInterval(3000,
-                        enemy = new component(30, 30, "enemy.png", 150, 150, "image")) 
-                        enemy.speedY = 1; 
-                }           
+                }
             }
                 
-
             // game component constructor
             function component(width, height, color, x, y, type) {
                 
                 this.gamearea = myGameArea;
+                
                 this.type = type;
                 if (type == "image") {
                     this.image = new Image();
                     this.image.src = color;
                 }
+
                 this.width = width;
                 this.height = height;
+
                 this.speedX = 0;
-                this.speedY = 0;    
+                this.speedY = 0;
+
                 this.x = x;
                 this.y = y;    
                 
                 // draws game object
                 this.update = function() {
+                    
                     ctx = myGameArea.context;
+                    
                     if (type == "image") {
                         ctx.drawImage(
                             this.image,
@@ -121,6 +113,7 @@
                             this.height
                         );
                     }
+                    
                     else {
                         ctx.fillStyle = color;
                         ctx.fillRect(
@@ -140,38 +133,49 @@
                 
                 //collision detection
                 this.crashWith = function(otherobj) {
-                    var myleft = this.x;
-                    var myright = this.x + (this.width);
-                    var mytop = this.y;
-                    var mybottom = this.y + (this.height);
-                    var otherleft = otherobj.x;
-                    var otherright = otherobj.x + (otherobj.width);
-                    var othertop = otherobj.y;
-                    var otherbottom = otherobj.y + (otherobj.height);
-                    var crash = true;
-                    if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+                    
+                    let myleft = this.x;
+                    let myright = this.x + (this.width);
+
+                    let mytop = this.y;
+                    let mybottom = this.y + (this.height);
+
+                    let otherleft = otherobj.x;
+                    let otherright = otherobj.x + (otherobj.width);
+
+                    let othertop = otherobj.y;
+                    let otherbottom = otherobj.y + (otherobj.height);
+                    
+                    let crash = true;
+                    if ((mybottom < othertop) || (mytop > otherbottom) || 
+                        (myright < otherleft) || (myleft > otherright)) {
+                        
                         crash = false;
                     }
+
                     return crash;
                 }
             }
-
+            
             // updates game area to reflect current player input and animation sequences
             function updateGameArea() {
+                
                 if (beam.crashWith(enemy)) {
                     enemy.x = -1000;
-                } 
+                }
+
                 else {
+                    
                     myGameArea.clear();
                 
                     for (i = 0; i < beams.length; i++) { 
                         beams[i].newPos();    
                         beams[i].update();
                     }
-
                 }
 
                 ship.speedX = 0;
+
                 if (myGameArea.key && myGameArea.key == 37) {ship.speedX = - 8; }
                 if (myGameArea.key && myGameArea.key == 39) {ship.speedX = 8; }
                 
@@ -180,20 +184,15 @@
                     beams.push(beam = new component(5, 10, "beam.png", 
                     ship.x + 22.5, ship.y + 5,"image"));
                     beam.speedY = -1;
-                    // console.log(beams.length);
                    }
-
                  
                 ship.newPos();      
                 ship.update();
-
+                
                 enemy.newPos();
                 enemy.update();
                 
-                // beam.newPos();
-                // beam.update();
             }
-
         </script>
 
     </body>
