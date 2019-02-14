@@ -31,7 +31,7 @@
                 myGameArea.start();
 
                 ship = new component(50, 50, "player.png", 270, 340, "image");
-                enemy = new component(30, 30, "enemy.png",270, 100,"image");
+                
                 beam = new component(0, 0, "beam.png", ship.x + 22.5, ship.y,"image");
             
             }
@@ -55,8 +55,10 @@
                     // ensure canvas is loaded first before other elements in body
                     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                 
+                    this.frameNo = 0;
+                    
                     // sets the interval at which the game updates its state 
-                    this.interval = setInterval(updateGameArea, 10);
+                    this.interval = setInterval(updateGameArea, 20);
                     
                     // event listener for key press
                     window.addEventListener('keydown', function (e) {
@@ -77,8 +79,15 @@
                 stop : function () {
                         clearInterval(this.interval);
                 }
+
             }
+            function everyinterval(n) {
+                if ((myGameArea.frameNo / n) % 1 == 0) {
+                    return true;
+                }
                 
+                return false;
+            }
             // game component constructor
             function component(width, height, color, x, y, type) {
                 
@@ -156,43 +165,63 @@
                     return crash;
                 }
             }
+            // sets game over condition and outcome
+            function gameOver() {
+                if (enemy.y > 401) {
+                    myGameArea.clear();
+                }
+            }
             
             // updates game area to reflect current player input and animation sequences
             function updateGameArea() {
                 
-                if (beam.crashWith(enemy)) {
-                    enemy.x = -1000;
-                }
-
-                else {
-                    
-                    myGameArea.clear();
+                myGameArea.clear();
                 
-                    for (i = 0; i < beams.length; i++) { 
-                        beams[i].newPos();    
-                        beams[i].update();
-                    }
-                }
+                myGameArea.frameNo += 1;
 
+                if (myGameArea.frameNo == 1 || everyinterval(150)) {
+                
+                    enemies.push( enemy = new component(30, 30, "enemy.png",
+                    Math.floor(Math.random() * 580) + 20, -50, "image"));
+                }
+                
+                for (i = 0; i < enemies.length; i++) {
+                    if (beam.crashWith(enemies[i])) {
+                        enemies[i].y = - 1000;
+                        enemies[i].speedY = -1;
+                }
+                    enemies[i].speedY = 1;
+                    enemies[i].newPos();
+                    enemies[i].update();
+                }
+                
                 ship.speedX = 0;
 
-                if (myGameArea.key && myGameArea.key == 37) {ship.speedX = - 8; }
-                if (myGameArea.key && myGameArea.key == 39) {ship.speedX = 8; }
+                if (myGameArea.key && myGameArea.key === 37) {
+                    ship.speedX = - 8; 
+                }
+
+                if (myGameArea.key && myGameArea.key === 39) {
+                    ship.speedX = 8; 
+                }
                 
                 
-                if (myGameArea.key && myGameArea.key == 32) {
-                    beams.push(beam = new component(5, 10, "beam.png", 
-                    ship.x + 22.5, ship.y + 5,"image"));
-                    beam.speedY = -1;
-                   }
-                 
+                for (i = 0; i < beams.length; i++) { 
+                    beams[i].newPos();    
+                    beams[i].update();
+                }
+                
+                if (myGameArea.key && myGameArea.key === 32) {
+                    beams.push(beam = new component(10, 30, "beam.png", 
+                    ship.x + 20, ship.y + 5,"image"));
+                    beam.speedY = -10;
+                }
+
                 ship.newPos();      
                 ship.update();
-                
-                enemy.newPos();
-                enemy.update();
-                
+           
             }
+
         </script>
 
     </body>
