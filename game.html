@@ -21,10 +21,11 @@
         <!-- begin js -->
 
         <script>
-            // initialize player
+            // initialize game objects
             let ship;
             let enemies = [];
             let beams = [];
+            let score = 0;
             
             function startGame() {
                 
@@ -141,23 +142,23 @@
                 }
                 
                 //collision detection
-                this.crashWith = function(otherobj) {
+                this.crashWith = function(otherObj) {
                     
-                    let myleft = this.x;
-                    let myright = this.x + (this.width);
+                    let myLeft = this.x;
+                    let myRight = this.x + (this.width);
 
-                    let mytop = this.y;
-                    let mybottom = this.y + (this.height);
+                    let myTop = this.y;
+                    let myBottom = this.y + (this.height);
 
-                    let otherleft = otherobj.x;
-                    let otherright = otherobj.x + (otherobj.width);
+                    let otherLeft = otherObj.x;
+                    let otherRight = otherObj.x + (otherObj.width);
 
-                    let othertop = otherobj.y;
-                    let otherbottom = otherobj.y + (otherobj.height);
+                    let otherTop = otherObj.y;
+                    let otherBottom = otherObj.y + (otherObj.height);
                     
                     let crash = true;
-                    if ((mybottom < othertop) || (mytop > otherbottom) || 
-                        (myright < otherleft) || (myleft > otherright)) {
+                    if ((myBottom < otherTop) || (myTop > otherBottom) || 
+                        (myRight < otherLeft) || (myLeft > otherRight)) {
                         
                         crash = false;
                     }
@@ -165,58 +166,68 @@
                     return crash;
                 }
             }
-            // sets game over condition and outcome
-            function gameOver() {
-                if (enemy.y > 401) {
-                    myGameArea.clear();
-                }
-            }
             
             // updates game area to reflect current player input and animation sequences
             function updateGameArea() {
                 
+                // clears the game area at specified frame rate
                 myGameArea.clear();
                 
+                // increments frame tracker
                 myGameArea.frameNo += 1;
 
+                // adds new enemies to the board at frame intervals
                 if (myGameArea.frameNo == 1 || everyinterval(150)) {
                 
                     enemies.push( enemy = new component(30, 30, "enemy.png",
                     Math.floor(Math.random() * 580) + 20, -50, "image"));
                 }
                 
+                // kills enemies when hit by beam, adds to score
                 for (i = 0; i < enemies.length; i++) {
                     if (beam.crashWith(enemies[i])) {
                         enemies[i].y = - 1000;
                         enemies[i].speedY = -1;
+                        score++;
+                        console.log(score);
                 }
+                    // causes enemies to come towards player                
                     enemies[i].speedY = 1;
                     enemies[i].newPos();
                     enemies[i].update();
+
+                    // game over if enemies pass player ship
+                    if (enemies[i].y > 401) {
+                        myGameArea.stop();
+                    }
                 }
                 
+                // initialize ship spee
                 ship.speedX = 0;
 
+                // move left
                 if (myGameArea.key && myGameArea.key === 37) {
                     ship.speedX = - 8; 
                 }
 
+                // move right
                 if (myGameArea.key && myGameArea.key === 39) {
                     ship.speedX = 8; 
                 }
                 
-                
+                /// keeps fired beams on screen
                 for (i = 0; i < beams.length; i++) { 
                     beams[i].newPos();    
                     beams[i].update();
                 }
                 
+                // fire beams 
                 if (myGameArea.key && myGameArea.key === 32) {
                     beams.push(beam = new component(10, 30, "beam.png", 
                     ship.x + 20, ship.y + 5,"image"));
                     beam.speedY = -10;
                 }
-
+                // updates ship position
                 ship.newPos();      
                 ship.update();
            
