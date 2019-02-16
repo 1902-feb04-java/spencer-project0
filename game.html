@@ -34,6 +34,9 @@
                 ship = new component(50, 50, "player.png", 270, 340, "image");
                 
                 beam = new component(0, 0, "beam.png", ship.x + 22.5, ship.y,"image");
+
+                // scoreBoard = new component(30, 80,"", "SCORE: " + score, 70, "");
+
             
             }
             
@@ -82,6 +85,7 @@
                 }
 
             }
+            
             function everyinterval(n) {
                 if ((myGameArea.frameNo / n) % 1 == 0) {
                     return true;
@@ -125,8 +129,9 @@
                     }
                     
                     else {
-                        ctx.fillStyle = color;
-                        ctx.fillRect(
+                        ctx.font = "20px Arial";
+                        ctx.fillStyle = "white";
+                        ctx.fillText(
                             this.x,
                             this.y,
                             this.width, 
@@ -169,7 +174,14 @@
             
             // updates game area to reflect current player input and animation sequences
             function updateGameArea() {
-                
+
+                // creates and updates score
+               function scoreBoard() {
+                   ctx = myGameArea.context;
+                   ctx.font = "30px Arial";
+                   ctx.fillStyle = "white";
+                   ctx.fillText("SCORE: " + score,30,30);
+               }
                 // clears the game area at specified frame rate
                 myGameArea.clear();
                 
@@ -178,18 +190,19 @@
 
                 // adds new enemies to the board at frame intervals
                 if (myGameArea.frameNo == 1 || everyinterval(150)) {
-                
-                    enemies.push( enemy = new component(30, 30, "enemy.png",
-                    Math.floor(Math.random() * 580) + 20, -50, "image"));
+                    enemies.push(enemy = new component(30, 30, "enemy.png",
+                    Math.floor(Math.random() * 550)  + 50, -60, "image"));
                 }
                 
                 // kills enemies when hit by beam, adds to score
                 for (i = 0; i < enemies.length; i++) {
                     if (beam.crashWith(enemies[i])) {
-                        enemies[i].y = - 1000;
-                        enemies[i].speedY = -1;
-                        score++;
-                        console.log(score);
+                        if (beam.y > 0) {
+                            enemies[i].y = - 1000;
+                            enemies[i].speedY = -1;
+                            score++;
+                            console.log(score);
+                        }
                 }
                     // causes enemies to come towards player                
                     enemies[i].speedY = 1;
@@ -199,23 +212,31 @@
                     // game over if enemies pass player ship
                     if (enemies[i].y > 401) {
                         myGameArea.stop();
+                        ctx.font = "30px Arial";
+                        ctx.fillStyle = "white";
+                        ctx.fillText("GAME OVER", 200, 200);
+
                     }
                 }
                 
-                // initialize ship spee
+                // initialize ship speed
                 ship.speedX = 0;
-
+                
+                if (ship.x > 10 ) {
                 // move left
                 if (myGameArea.key && myGameArea.key === 37) {
                     ship.speedX = - 8; 
                 }
+                }
 
+                if (ship.x  < 550) {
                 // move right
                 if (myGameArea.key && myGameArea.key === 39) {
                     ship.speedX = 8; 
                 }
+                }
                 
-                /// keeps fired beams on screen
+                // keeps fired beams on screen
                 for (i = 0; i < beams.length; i++) { 
                     beams[i].newPos();    
                     beams[i].update();
@@ -227,10 +248,12 @@
                     ship.x + 20, ship.y + 5,"image"));
                     beam.speedY = -10;
                 }
+
                 // updates ship position
                 ship.newPos();      
                 ship.update();
-           
+
+                scoreBoard();
             }
 
         </script>
