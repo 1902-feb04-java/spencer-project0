@@ -21,21 +21,24 @@
         <!-- begin js -->
 
         <script>
+
             // initialize game objects
             let ship;
             let enemies = [];
             let beams = [];
             let score = 0;
             
+
+            // start the game (duh)
             function startGame() {
                 
                 myGameArea.start();
-
-                ship = new component(50, 50, "player.png", 270, 340, "image");
                 
-                beam = new component(0, 0, "beam.png", ship.x + 22.5, ship.y,"image");
-
-                // scoreBoard = new component(30, 80,"", "SCORE: " + score, 70, "");
+                //initiate player ship
+                ship = new component(50, 50, "player.png", 270, 340);
+                
+                // initial instance of beam
+                beam = new component(0, 0, "beam.png", ship.x + 22.5, ship.y);
 
             
             }
@@ -80,12 +83,14 @@
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 },
                 
+                // stops the game
                 stop : function () {
                         clearInterval(this.interval);
                 }
 
             }
             
+            // tracks game interval
             function everyinterval(n) {
                 if ((myGameArea.frameNo / n) % 1 == 0) {
                     return true;
@@ -94,15 +99,10 @@
                 return false;
             }
             // game component constructor
-            function component(width, height, color, x, y, type) {
-                
-                this.gamearea = myGameArea;
-                
-                this.type = type;
-                if (type == "image") {
-                    this.image = new Image();
-                    this.image.src = color;
-                }
+            function component(width, height, sprite, x, y) {
+            
+                this.image = new Image();
+                this.image.src = sprite;
 
                 this.width = width;
                 this.height = height;
@@ -117,8 +117,7 @@
                 this.update = function() {
                     
                     ctx = myGameArea.context;
-                    
-                    if (type == "image") {
+                
                         ctx.drawImage(
                             this.image,
                             this.x,
@@ -126,18 +125,7 @@
                             this.width,
                             this.height
                         );
-                    }
-                    
-                    else {
-                        ctx.font = "20px Arial";
-                        ctx.fillStyle = "white";
-                        ctx.fillText(
-                            this.x,
-                            this.y,
-                            this.width, 
-                            this.height
-                        )
-                    }
+    
                 }
                 
                 // facilitates movement of game objects
@@ -222,18 +210,21 @@
                 // initialize ship speed
                 ship.speedX = 0;
                 
+                // prevent ship from going offscreen left
                 if (ship.x > 10 ) {
-                // move left
-                if (myGameArea.key && myGameArea.key === 37) {
-                    ship.speedX = - 8; 
+                    
+                    // move left
+                    if (myGameArea.key && myGameArea.key === 37) {
+                        ship.speedX = - 8; 
+                    }
                 }
-                }
-
+                
+                //prevent ship from going offscreen right
                 if (ship.x  < 550) {
                 // move right
-                if (myGameArea.key && myGameArea.key === 39) {
-                    ship.speedX = 8; 
-                }
+                    if (myGameArea.key && myGameArea.key === 39) {
+                        ship.speedX = 8; 
+                    }
                 }
                 
                 // keeps fired beams on screen
@@ -253,6 +244,7 @@
                 ship.newPos();      
                 ship.update();
 
+                // initiate and update score
                 scoreBoard();
             }
 
